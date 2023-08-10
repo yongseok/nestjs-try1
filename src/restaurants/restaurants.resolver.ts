@@ -1,9 +1,12 @@
 import { Resolver, Query } from '@nestjs/graphql';
+import { Restaurant } from './entities/restaurants.entity';
 
 @Resolver()
 export class RestaurantResolver {
-  @Query((type) => String)
+  @Query((type) => Restaurant)
   helloWord() {
-    return 'hello, world';
+    return {
+      name: 'cheese',
+    };
   }
 }
