@@ -3,6 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
+  UpdateRestaurantInput,
+  UpdateRestaurantOuput,
+} from './dtos/update-restaurant.dto';
+import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
@@ -32,6 +36,23 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not create Restaurant',
+      };
+    }
+  }
+
+  async updateRestaurant({
+    id,
+    data,
+  }: UpdateRestaurantInput): Promise<UpdateRestaurantOuput> {
+    try {
+      await this.restaurants.update(id, { ...data });
+      return {
+        ok: true,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: 'Could not update Restaurant',
       };
     }
   }

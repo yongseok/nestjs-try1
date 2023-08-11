@@ -5,20 +5,28 @@ import {
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
 import { RestaurantService } from './restaurants.service';
+import { UpdateRestaurantInput } from './dtos/update-restaurant.dto';
 
 @Resolver()
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Query((type) => [Restaurant])
+  @Query((returns) => [Restaurant])
   async restaurants(): Promise<Restaurant[]> {
     return this.restaurantService.getAll();
   }
 
-  @Mutation((type) => CreateRestaurantOutput)
+  @Mutation((returns) => CreateRestaurantOutput)
   async createRestaurants(
     @Args('input') createRestaurantsInput: CreateRestaurantInput,
   ) {
     return this.restaurantService.createRestaurant(createRestaurantsInput);
+  }
+
+  @Mutation((returns) => CreateRestaurantOutput)
+  async updateRestaurant(
+    @Args('input') updateRestaurantInput: UpdateRestaurantInput,
+  ): Promise<CreateRestaurantOutput> {
+    return this.restaurantService.updateRestaurant(updateRestaurantInput);
   }
 }
