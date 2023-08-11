@@ -1,14 +1,19 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { IsString, Length } from 'class-validator';
 
 @InputType()
 export class CreateRestaurantsInput {
   @Field((type) => String)
+  @IsString()
+  @Length(5, 10)
   name: string;
 
   @Field((type) => String)
+  @IsString()
   coverImg: string;
 
   @Field((type) => String)
+  @IsString()
   address: string;
 }
 
