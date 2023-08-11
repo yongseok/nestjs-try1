@@ -4,18 +4,17 @@ import {
   CreateRestaurantsInput,
   CreateRestaurantsOutput,
 } from './dtos/create-restaurant.dto';
+import { RestaurantService } from './restaurants.service';
 
 @Resolver()
 export class RestaurantResolver {
+  constructor(private readonly restaurantService: RestaurantService) {}
+
   @Query((type) => [Restaurant])
-  restaurants(@Args('name') name: string, @Args('isGood') isGood: boolean) {
-    return [
-      {
-        name,
-        isGood,
-      },
-    ];
+  async restaurants(): Promise<Restaurant[]> {
+    return this.restaurantService.getAll();
   }
+
   @Mutation((type) => CreateRestaurantsOutput)
   createRestaurants(
     @Args('input') createRestaurantsInput: CreateRestaurantsInput,

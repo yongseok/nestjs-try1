@@ -1,5 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
+import { Restaurant } from '../entities/restaurants.entity';
 
 @InputType()
 export class CreateRestaurantsInput {
@@ -24,4 +25,7 @@ export class CreateRestaurantsOutput {
 
   @Field((type) => String)
   error: string;
+
+  @Field((type) => [Restaurant])
+  restaurants: Restaurant[];
 }
