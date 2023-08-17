@@ -1,5 +1,6 @@
 import { Field, InputType, ObjectType, PartialType } from '@nestjs/graphql';
 import { CreateRestaurantInput } from './create-restaurant.dto';
+import { CoreOuput } from 'src/common/dtos/output.dto';
 
 @InputType()
 export class UpdateRestaurantInputType extends PartialType(
@@ -16,10 +17,4 @@ export class UpdateRestaurantInput {
 }
 
 @ObjectType()
-export class UpdateRestaurantOuput {
-  @Field((type) => Boolean)
-  ok: boolean;
-
-  @Field((type) => String, { nullable: true })
-  error?: string;
-}
+export class UpdateRestaurantOuput extends CoreOuput {}
