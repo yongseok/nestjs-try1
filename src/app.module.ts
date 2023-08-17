@@ -13,6 +13,7 @@ import { UserModule } from './user/user.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { JwtModule } from './jwt/jwt.module';
 import { Category } from './restaurants/entities/category.entity';
+import { Dish } from './restaurants/entities/dish.entity';
 
 @Module({
   imports: [
@@ -45,7 +46,7 @@ import { Category } from './restaurants/entities/category.entity';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: false,
-      entities: [Restaurant, User, Category],
+      entities: [Restaurant, User, Category, Dish],
     }),
     JwtModule.forRoot({
       PrivateKey: 'privatekey1',

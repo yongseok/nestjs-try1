@@ -17,11 +17,12 @@ export class JwtMiddleware implements NestMiddleware {
       try {
         const decoded = this.jwtService.verify(token.toString());
         if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
-          const user: User = await this.userService.findById(decoded.id)
+          const user: User = await this.userService.findById(decoded.id);
           req['user'] = user;
         }
       } catch (e) {
-        throw new Error(e);
+        console.log('🚀 | file: jwt.middleware.ts:24 | e:', e);
+        // throw new Error(e);
       }
     }
     next();
