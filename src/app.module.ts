@@ -15,6 +15,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { Category } from './restaurants/entities/category.entity';
 import { Dish } from './restaurants/entities/dish.entity';
 import { Order } from './order/entities/order.entity';
+import { Verification } from './user/entities/Verification.entity';
 
 @Module({
   imports: [
@@ -47,7 +48,7 @@ import { Order } from './order/entities/order.entity';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: false,
-      entities: [Restaurant, User, Category, Dish, Order],
+      entities: [Restaurant, User, Category, Dish, Order, Verification],
     }),
     JwtModule.forRoot({
       PrivateKey: 'privatekey1',

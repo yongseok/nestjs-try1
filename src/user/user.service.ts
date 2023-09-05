@@ -7,11 +7,17 @@ import { LoginInput, LoginOutput } from './dto/login.dto';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from 'src/jwt/jwt.service';
+import { UserProfileInput, UserProfileOutput } from './dto/userProfile.dto';
+import { EditProfileInput, EditProfileOutput } from './dto/edit-profile.dto';
+import { Verification } from './entities/Verification.entity';
+import { VerifyEmailInput, VerifyEmailOutput } from './dto/verify-email.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verifications: Repository<Verification>,
     private readonly config: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -95,6 +101,92 @@ export class UserService {
       });
     } catch (e) {
       throw new Error('Could not found user by id');
+    }
+  }
+
+  // TODO: 사용자 조회 시 (relation: restaurants, orders, payments, riders)
+  async userProfile({ email }: UserProfileInput): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOne({
+        where: {
+          email,
+        },
+      });
+      if (!user) {
+        return {
+          ok: false,
+          error: 'User not found.',
+        };
+      }
+
+      return {
+        ok: true,
+        user,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: 'Could not should user profile.',
+      };
+    }
+  }
+
+  async editProfile(
+    user: User,
+    editProfileInput: EditProfileInput,
+  ): Promise<EditProfileOutput> {
+    try {
+      const find_user = await this.users.findOne({
+        where: { id: user.id },
+      });
+      if (!find_user) {
+        return {
+          ok: false,
+          error: 'could not found user.',
+        };
+      }
+
+      await this.verifications.save(
+        this.verifications.create({
+          user,
+        }),
+      );
+
+      await this.users.save(
+        this.users.create({ ...find_user, ...editProfileInput }),
+      );
+      return {
+        ok: true,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: 'could not run editProfile.',
+      };
+    }
+  }
+
+  async verifyEmail({ code }: VerifyEmailInput): Promise<VerifyEmailOutput> {
+    try {
+      const verify = await this.verifications.findOne({ where: { code } });
+      if (!verify) {
+        return {
+          ok: false,
+          error: 'can not found verify.',
+        };
+      }
+      await this.verifications.delete(verify.id);
+      return {
+        ok: true,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: 'Could not verify email.',
+      };
     }
   }
 }

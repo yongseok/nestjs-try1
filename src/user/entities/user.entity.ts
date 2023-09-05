@@ -5,7 +5,7 @@ import {
   registerEnumType,
 } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { IsEnum } from 'class-validator';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -37,6 +37,10 @@ export class User extends CoreEntity {
   @IsEnum(UserRole)
   role: UserRole;
 
+  @Column({ default: false })
+  @Field((type) => Boolean, { defaultValue: false })
+  verified: boolean;
+
   @OneToMany(() => Restaurant, (restaurant) => restaurant.owner)
   restaurants: Restaurant[];
 
@@ -48,9 +52,13 @@ export class User extends CoreEntity {
   @OneToMany(() => Order, (rider) => rider.driver)
   riders: Order[];
 
+  //payments: Payment[];
+
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
     try {
+      console.log('🚀 | file: user.entity.ts:62 | password:', this.password);
       this.password = await bcrypt.hash(this.password, 10);
     } catch (e) {
       throw new InternalServerErrorException();

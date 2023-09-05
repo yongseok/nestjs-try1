@@ -9,7 +9,14 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurants.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  RelationId,
+} from 'typeorm';
 
 export enum OrderStatus {
   Pending = 'Pending',
@@ -30,6 +37,10 @@ export class Order extends CoreEntity {
     onDelete: 'SET NULL',
   })
   customer?: User;
+
+  @Field((type) => Number)
+  @RelationId((order: Order) => order.customer)
+  customerId: number;
 
   @Field((type) => User)
   @ManyToOne((type) => User, (driver) => driver.riders, {
