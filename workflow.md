@@ -190,18 +190,49 @@ options?: OrderItemOption[];
 **myRestaurant(User, MyRestaurantInput): MyRestaurantOutput**  
 
 **editRestaurant(User, EditRestaurantInput): EditRestaurantOutput**  
+레스토랑 주인이 편집하는 건지 권한 체크  
+[Restaurnt]-[Category name]을 업데이트 한다.
 
 **deleteRestaurant(User, DeleteRestaurantInput): DeleteRestaurantOutput**  
 
 **restaurants( RestaurantsInput ): RestaurantsOutput**  
+Page 처리(n/total)
 
 **restaurant(RestaurantInput): RestaurantOutput**  
 
 **searchRestaurant(SearchRestaurantInput): SearchRestaurantOutput**  
-***custom repository***  
+레스토랑 이름으로 
+Page 처리(n/total)조회
+:tent: custom repository
 src/restaurants/repositories/category.repository.ts
 
 # Category  
+> <details>  
+> <summary>Restaurant와 Category의 관게</summary>
+> <div markdown="1">
+> 
+> ```mermaid
+> erDiagram
+>   Restaurant }|--|| Category : ""
+>   Restaurant {
+>     Category category
+>   }
+>   Category {
+>     Restaurant[] restaurant
+>   }
+> ```
+> 
+> | Value (left) | Value (right) | Meaning                       |
+> | :----------: | :-----------: | ----------------------------- |
+> |    `\|o`     |     `o\|`     | Zero or one                   |
+> |    `\|\|`    |    `\|\|`     | Exactly one                   |
+> |     `}o`     |     `o{`      | Zero or more (no upper limit) |
+> |    `}\|`     |     `\|{`     | One or more (no upper limit)  |
+> 
+> 외래키(@RelationId)
+> </div>
+> </details>   
+
 **restaurantCount(Category): number**  
 
 **allCategories(): AllCategoriesOutput**  

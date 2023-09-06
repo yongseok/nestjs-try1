@@ -22,16 +22,19 @@ export class Restaurant extends CoreEntity {
   coverImg: string;
 
   @Field((type) => String, { nullable: true })
-  @Column()
-  @IsString()
-  address: string;
+  @Column({ nullable: true })
+  address?: string;
 
   @Field((type) => Category, { nullable: true })
-  @ManyToOne((type) => Category, (category) => category.restaurants, {})
+  @ManyToOne((type) => Category, (category) => category.restaurants, {
+    eager: true,
+  })
   category: Category;
 
   @Field((type) => User)
-  @ManyToOne((type) => User, (user) => user.restaurants, {})
+  @ManyToOne((type) => User, (user) => user.restaurants, {
+    onDelete: 'CASCADE',
+  })
   owner: User;
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)

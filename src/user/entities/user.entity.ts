@@ -41,6 +41,7 @@ export class User extends CoreEntity {
   @Field((type) => Boolean, { defaultValue: false })
   verified: boolean;
 
+  @Field(type => [Restaurant])
   @OneToMany(() => Restaurant, (restaurant) => restaurant.owner)
   restaurants: Restaurant[];
 

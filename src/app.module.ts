@@ -47,7 +47,7 @@ import { Verification } from './user/entities/Verification.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
-      logging: false,
+      logging: true,
       entities: [Restaurant, User, Category, Dish, Order, Verification],
     }),
     JwtModule.forRoot({
