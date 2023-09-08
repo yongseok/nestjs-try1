@@ -12,7 +12,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Restaurant } from 'src/restaurants/entities/restaurants.entity';
 import { Order } from 'src/order/entities/order.entity';
 
-enum UserRole {
+export enum UserRole {
   Client = 'Client',
   Owner = 'Owner',
   Delivery = 'Delivery',
@@ -41,7 +41,7 @@ export class User extends CoreEntity {
   @Field((type) => Boolean, { defaultValue: false })
   verified: boolean;
 
-  @Field(type => [Restaurant])
+  @Field((type) => [Restaurant])
   @OneToMany(() => Restaurant, (restaurant) => restaurant.owner)
   restaurants: Restaurant[];
 
@@ -59,7 +59,6 @@ export class User extends CoreEntity {
   @BeforeUpdate()
   async hashPassword() {
     try {
-      console.log('🚀 | file: user.entity.ts:62 | password:', this.password);
       this.password = await bcrypt.hash(this.password, 10);
     } catch (e) {
       throw new InternalServerErrorException();

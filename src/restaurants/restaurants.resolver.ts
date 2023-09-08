@@ -35,6 +35,7 @@ import {
   SearchRestaurantOuput,
   SearchRestaurantInput,
 } from './dtos/search-restaurant.dto';
+import { Role } from 'src/user/role.decorator';
 
 @Resolver()
 export class RestaurantResolver {
@@ -54,6 +55,7 @@ export class RestaurantResolver {
     return this.restaurantService.restaurant(restaurantInput);
   }
 
+  @Role('Owner')
   @Mutation((returns) => CreateRestaurantOutput)
   async createRestaurants(
     @AuthUser() owner: User,
@@ -65,6 +67,7 @@ export class RestaurantResolver {
     );
   }
 
+  @Role('Owner')
   @Query((returns) => MyRestaurantsOutput)
   async myRestaurants(@AuthUser() user: User): Promise<MyRestaurantsOutput> {
     return this.restaurantService.myRestaurants(user);

@@ -1,0 +1,122 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
+import { AppModule } from '../src/app.module';
+import { DataSource, Repository, getConnection } from 'typeorm';
+import { Verification } from 'src/user/entities/Verification.entity';
+import { User } from 'src/user/entities/user.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { after } from 'node:test';
+import { extend } from 'joi';
+
+describe('UserModule (e2e)', () => {
+  let app: INestApplication;
+  let dataSource: DataSource;
+  let userRepository: Repository<User>;
+  let verifications: Repository<Verification>;
+
+  let JSONWEBTOKEN: string;
+
+  const testUser = {
+    email: 'test90@mail.com',
+    password: '1234',
+  };
+
+  const commonRequest = () => request(app.getHttpServer()).post('/graphql');
+  const publicRequest = (query: string) => {
+    return commonRequest().send({ query });
+  };
+  const privateRequest = (query: string) =>
+    commonRequest().set('x-jwt', JSONWEBTOKEN).send({ query });
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    app = moduleFixture.createNestApplication();
+    userRepository = moduleFixture.get<Repository<User>>(
+      getRepositoryToken(User),
+    );
+    verifications = moduleFixture.get<Repository<Verification>>(
+      getRepositoryToken(Verification),
+    );
+
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await dataSource.dropDatabase();
+    await app.close();
+  });
+
+  describe('createAccount', () => {
+    it('should create account', async () => {
+      return await publicRequest(`
+        mutation {
+          createAccount( input: {
+            email:"${testUser.email}",
+            password:"${testUser.password}",
+            role:Owner
+          }) {
+            ok
+            error
+          }
+        }
+      `)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data.createAccount.ok).toBe(true);
+          expect(res.body.data.createAccount.error).toBe(null);
+        });
+    });
+  });
+
+  describe('login', () => {
+    it('should be login', async () => {
+      return await publicRequest(`
+        mutation {
+          login(input: {
+            email: "${testUser.email}"
+            password: "${testUser.password}"
+          }){
+            ok
+            error
+            token
+          }
+        }
+      `)
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: { login },
+            },
+          } = res;
+          expect(login.ok).toBe(true);
+          expect(login.error).toBe(null);
+          expect(login.token).toEqual(expect.any(String));
+          JSONWEBTOKEN = login.token;
+        });
+    });
+  });
+  describe('find by id', () => {
+    it('아이디로 사용자 검색', async () => {
+      return await privateRequest(`
+        query {
+          me {
+            id
+            email
+            password
+            role
+          }
+        }
+      `)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data.me).toHaveProperty('id');
+        });
+    });
+  });
+});

@@ -16,14 +16,21 @@ import { Category } from './restaurants/entities/category.entity';
 import { Dish } from './restaurants/entities/dish.entity';
 import { Order } from './order/entities/order.entity';
 import { Verification } from './user/entities/Verification.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './Auth/auth.guard';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
+      envFilePath:
+        process.env.NODE_ENV === 'dev'
+          ? '.env.dev'
+          : process.env.NODE_ENV === 'test'
+          ? '.env.test'
+          : '.env.dev',
       ignoreEnvFile: process.env.NODE_ENV === 'prod',
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('dev', 'prod').required(),
+        NODE_ENV: Joi.string().valid('dev', 'test', 'prod').required(),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
@@ -47,7 +54,7 @@ import { Verification } from './user/entities/Verification.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
-      logging: true,
+      logging: false,
       entities: [Restaurant, User, Category, Dish, Order, Verification],
     }),
     JwtModule.forRoot({
@@ -57,7 +64,13 @@ import { Verification } from './user/entities/Verification.entity';
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

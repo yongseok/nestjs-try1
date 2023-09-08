@@ -40,7 +40,7 @@ export class UserService {
         };
       }
 
-      this.users.save(
+      await this.users.save(
         this.users.create({
           email,
           password,
@@ -51,6 +51,7 @@ export class UserService {
         ok: true,
       };
     } catch (e) {
+      console.log(e);
       return {
         ok: false,
         error: 'Could not create Account',

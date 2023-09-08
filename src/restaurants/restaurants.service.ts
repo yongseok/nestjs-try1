@@ -37,6 +37,7 @@ import {
   SearchRestaurantInput,
   SearchRestaurantOuput,
 } from './dtos/search-restaurant.dto';
+import { Role } from 'src/user/role.decorator';
 
 @Injectable()
 export class RestaurantService {
@@ -77,7 +78,7 @@ export class RestaurantService {
 
   async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
     try {
-      // 아래 조회 시 에러 발생하여 QueryBuilder를 사용하도록 변경함. 에러 발생 원인을 알수 없으며, typeorm 로그의 쿼리문을 직접 실행시에는 정상 조회 됨.
+      // NOTE: 아래 조회 시 에러 발생하여 QueryBuilder를 사용하도록 변경함. 에러 발생 원인을 알수 없으며, typeorm 로그의 쿼리문을 직접 실행시에는 정상 조회 됨.
       // error: EntityPropertyNotFoundError: Property "ownerId" was not found in "Restaurant". Make sure your query is correct.
       // const restaurants = await this.restaurants.find({
       //   where: { ownerId: owner.id },
@@ -116,10 +117,6 @@ export class RestaurantService {
     user: User,
     editRestaurantInput: EditRestaurantInput,
   ): Promise<EditRestaurantOutput> {
-    console.log(
-      '🚀 | file: restaurants.service.ts:112 | editRestaurantInput:',
-      editRestaurantInput,
-    );
     try {
       const restaurant = await this.restaurantsRepo.findOne({
         where: { id: editRestaurantInput.id },
